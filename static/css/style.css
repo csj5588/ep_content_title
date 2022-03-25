@@ -1,0 +1,43 @@
+.ep-content-title-container{
+  width: 100%;
+  position: absolute;
+  top: 15px;
+  left: 19px;
+  right: 0;
+  opacity: 0;
+}
+
+.ep-content-title{
+  max-width: 900px;
+  width: 100%;
+  padding: 40px 54px 0 54px;
+  margin: 0 auto;
+  line-height: 1.5;
+  font-size: 30px;
+  background: #fff;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  overflow-x: auto;
+}
+.ep-content-title h1,
+.ep-content-title h2,
+.ep-content-title h3,
+.ep-content-title h4,
+.ep-content-title h5,
+.ep-content-title span,
+.ep-content-title p,
+.ep-content-title div,
+.ep-content-title ul,
+.ep-content-title li{
+  font-size: 30px!important;
+}
+
+.ep-content-title:focus{
+  border: none;
+  outline: none;
+}
+
+.ep-content-title:empty:before{
+  content: '请输入标题';
+  color: #cdcdcd;
+}

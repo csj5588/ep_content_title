@@ -1,0 +1,19 @@
+{
+  "parts": [
+    {
+      "name": "main",
+      "client_hooks": {
+        "postToolbarInit": "ep_content_title/static/js/index",
+        "aceEditorCSS": "ep_content_title/static/js/index",
+        "postAceInit": "ep_content_title/static/js/index",
+        "documentReady": "ep_content_title/static/js/index",
+        "handleClientMessage_CUSTOM": "ep_content_title/static/js/index"
+      },
+      "hooks": {
+        "eejsBlock_body": "ep_content_title/index",
+        "eejsBlock_styles": "ep_content_title/index",
+        "handleMessage": "ep_content_title/handleMessage"
+      }
+    }
+  ]
+}
