@@ -9,9 +9,15 @@ const titleRef = {
    * 判断是否是输入法
    */
   isComposition: false,
+  /**
+   * 初始化的标题
+   */
+  initialzeTitle: ''
 }
 
-exports.documentReady = () => {}
+exports.documentReady = () => {
+  console.log('clientVars.ep_set_title_on_pad', clientVars)
+}
 
 exports.postToolbarInit = (hook, context) => {
   const padOuter = $('iframe[name="ace_outer"]').contents().find('body');
@@ -36,31 +42,51 @@ const sendTitle = (title) => {
 
 exports.postAceInit = (hook, context) => {
   const padOuter = $('iframe[name="ace_outer"]').contents().find('body');
-  const padInnerHTML = padOuter.contents('iframe').contents().find('html');
+  const padInnerBody = padOuter.contents('iframe').contents().find('body');
 
   const container = $('iframe[name="ace_outer"]').contents().find('.ep-content-title-container');
   const titleAce = $('iframe[name="ace_outer"]').contents().find('.ep-content-title');
-  const hasMobileLayout = $('body').hasClass('mobile-layout');
+
+  /**
+   * 初始化标题
+   */
+  titleAce[0].innerHTML = titleRef.initialzeTitle;
+
+  /**
+   * 布局检测, 并且持续监听window.resize做出布局调整
+   */
+  const checkWindowHasMobileLayoutDebounce = debounce(function() {
+    const hasMobileLayout = $('body').hasClass('mobile-layout');
+
+    if (hasMobileLayout) {
+      titleAce.css({ 'padding': '0 0 0 13px' })
+      container.css({ 'left': '0' })
+      padInnerBody.css({ 'padding-top': $(container).height() + 22 + 'px' })
+    } else {
+      titleAce.css({ 'padding': '40px 54px 0 54px' })
+      padInnerBody.css({ 'padding-top': $(container).height() - 22 + 'px' })
+    }
+  }, 100)
+
+  const checkWindowHasMobileLayout = () => {
+    checkWindowHasMobileLayoutDebounce();
+    $(window).resize(checkWindowHasMobileLayoutDebounce);
+  }
+
+  checkWindowHasMobileLayout()
+
   /**
    * 编辑器初始化完毕后进行title展示
-   * 1.初始化ACE的上内边距
+   * 1.初始化ACE的上内边距 ⬆️
    * 2.拿到初始化时候的titleAce的高度值，并备份
    */
   $(container).css('opacity', '1');
-
-  if (hasMobileLayout) {
-    titleAce.css({ 'padding': '0 0 0 0' })
-    container.css({ 'width': '92%' })
-    padInnerHTML.css({ 'padding-top': $(container).height() + 22 + 'px' })
-  } else {
-    padInnerHTML.css({ 'padding-top': $(container).height() - 22 + 'px' })
-  }
 
   titleRef.height = $(container).height();
 
   /**
    * 键盘拦截事件
-   * 拦截enter并且代理为pad focus
+   * 拦截Enter并且代理为pad focus
    */
   $(titleAce).keypress(function(event) {
     if (event.originalEvent.keyCode === 13) {
@@ -84,9 +110,9 @@ exports.postAceInit = (hook, context) => {
        * 备份并且调整ACE上内边距
        */
       if (hasMobileLayout) {
-        padInnerHTML.css({ 'padding-top': titleHeight + 22 + 'px' })
+        padInnerBody.css({ 'padding-top': titleHeight + 22 + 'px' })
       } else {
-        padInnerHTML.css({ 'padding-top': titleHeight - 22 + 'px' })
+        padInnerBody.css({ 'padding-top': titleHeight - 22 + 'px' })
       }
       titleRef.height = titleHeight;
     }
@@ -133,9 +159,21 @@ exports.aceEditorCSS = () => ['ep_content_title/static/css/style.css'];
 exports.handleClientMessage_CUSTOM = (hook, context, cb) => {
   if (context.payload.action === 'recieveTitleMessage') {
     const message = context.payload.message;
+
+    /**
+     * 标题第一次回填，不必处理光标等问题。
+     * 回填具体操作转到postAceInit中，因为我们的标题在OuterPad中
+     */
+    if (!titleRef.initialzeTitle) {
+      titleRef.initialzeTitle = message;
+      cb(null);
+      return;
+    }
+
     if (message) {
       const padOuter = $('iframe[name="ace_outer"]')
       const titleAce = $('iframe[name="ace_outer"]').contents().find('.ep-content-title');
+
       window.document.title = message;
       titleAce[0].innerHTML = message;
     

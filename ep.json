@@ -12,7 +12,8 @@
       "hooks": {
         "eejsBlock_body": "ep_content_title/index",
         "eejsBlock_styles": "ep_content_title/index",
-        "handleMessage": "ep_content_title/handleMessage"
+        "handleMessage": "ep_content_title/handleMessage",
+        "clientVars": "ep_content_title/handleMessage"
       }
     }
   ]

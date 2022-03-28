@@ -11,7 +11,6 @@ function debounce(func, wait) {
       func.apply(context, args);
     }
     timer = setTimeout(function() {
-      console.log('???')
       func.apply(context, args);
     }, wait)
   }
