@@ -47,6 +47,8 @@ exports.postAceInit = (hook, context) => {
   const container = $('iframe[name="ace_outer"]').contents().find('.ep-content-title-container');
   const titleAce = $('iframe[name="ace_outer"]').contents().find('.ep-content-title');
 
+  const hasMobileLayout = $('body').hasClass('mobile-layout');
+
   /**
    * 初始化标题
    */
